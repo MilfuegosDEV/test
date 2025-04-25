@@ -6,7 +6,12 @@ import fidelitasvirtual.org.dao.TiqueteDAOImpl;
 import fidelitasvirtual.org.dao.ReporteDAO;
 import fidelitasvirtual.org.dao.ReporteDAOImpl;
 import fidelitasvirtual.org.models.*;
+import fidelitasvirtual.org.util.DBUtil;
+
 import javax.swing.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -136,11 +141,16 @@ public class GestorCajas {
         }
     }
 
+
     public void mostrarReportes() {
-        // Podrías implementar aquí una consulta SQL de estadísticas,
-        // o mantenerlas en memoria similar a la clase Reportes original.
-        JOptionPane.showMessageDialog(null, "Función de reportes aún por implementar.");
+        try {
+            String resumen = ReporteDAOImpl.generarResumenReportes();
+            JOptionPane.showMessageDialog(null, resumen, "Reportes", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al generar reportes: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
+
 
     public void finalizarPrograma() {
         JOptionPane.showMessageDialog(null, "Saliendo...");
