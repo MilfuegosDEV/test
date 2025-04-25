@@ -13,7 +13,6 @@ public class TiqueteDAOImpl implements TiqueteDAO {
 
     @Override
     public Tiquete insertar(Tiquete t, char tipoCaja, int indexCaja) throws Exception {
-        // 1) Asegura cliente
         if (t.getCliente().getId() == 0) {
             clienteDAO.insertar(t.getCliente());
         }
@@ -30,12 +29,10 @@ public class TiqueteDAOImpl implements TiqueteDAO {
                             sqlInsert, Statement.RETURN_GENERATED_KEYS);
                     PreparedStatement psPen = conn.prepareStatement(sqlPend)
             ) {
-                // a) Inserto en Tiquete
                 psIns.setInt(1, t.getCliente().getId());
                 psIns.setTimestamp(2, Timestamp.valueOf(t.getHoraCreacion()));
                 psIns.executeUpdate();
 
-                // b) Recupero y asigno ID
                 try (ResultSet rs = psIns.getGeneratedKeys()) {
                     if (rs.next()) {
                         t.setId(rs.getInt(1));
@@ -44,7 +41,6 @@ public class TiqueteDAOImpl implements TiqueteDAO {
                     }
                 }
 
-                // c) Marco pendiente
                 psPen.setInt(1, t.getId());
                 psPen.setString(2, String.valueOf(tipoCaja));
                 psPen.setInt(3, indexCaja);

@@ -15,7 +15,6 @@ public class Tiquete {
         this.horaCreacion = LocalDateTime.now();
     }
 
-    /** Se usa al recargar desde BD */
     public void setId(int id) {
         this.id = id;
     }
@@ -44,13 +43,11 @@ public class Tiquete {
         return horaAtencion;
     }
 
-    /** Segundos entre creación y atención (0 si no ha sido atendido). */
     public long getSegundosEspera() {
         if (horaAtencion == null) return 0;
         return ChronoUnit.SECONDS.between(horaCreacion, horaAtencion);
     }
 
-    /** Formato “_m _s” o “No atendido”. */
     public String getTiempoAtencion() {
         if (horaAtencion == null) return "No atendido";
         long seg = getSegundosEspera();

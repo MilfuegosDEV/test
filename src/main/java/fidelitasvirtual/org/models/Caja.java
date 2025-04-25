@@ -1,5 +1,3 @@
-// src/main/java/fidelitasvirtual.org/models/Caja.java
-
 package fidelitasvirtual.org.models;
 
 public class Caja {

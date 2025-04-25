@@ -1,4 +1,3 @@
-// src/main/java/fidelitasvirtual.org/models/NodoTiquetes.java
 package fidelitasvirtual.org.models;
 
 public class NodoTiquetes {

@@ -1,13 +1,13 @@
 package fidelitasvirtual.org.models;
 
 public class Cliente {
-    private int id;              // se asigna tras INSERT
+    private int id;
     private final String nombre;
     private final int edad;
     private final char tipoCliente;
     private final String tipoTramite;
 
-    /** Para creación previa a INSERT (id se asigna luego) */
+
     public Cliente(String nombre, int edad, char tipoCliente, String tipoTramite) {
         this.nombre = nombre;
         this.edad = edad;
@@ -15,7 +15,6 @@ public class Cliente {
         this.tipoTramite = tipoTramite;
     }
 
-    /** Para carga desde BD */
     public Cliente(int id, String nombre, int edad, char tipoCliente, String tipoTramite) {
         this.id = id;
         this.nombre = nombre;

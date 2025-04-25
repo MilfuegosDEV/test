@@ -11,15 +11,12 @@ public class Grafo {
     };
 
     private static final String[][] COMPLEMENTOS = {
-            {"Seguro de vida", "Fondo de inversión"},       // Depósitos
-            {"Retiro sin tarjeta", "Préstamo rápido"},      // Retiros
-            {"Cuenta en dólares", "Certificado de divisas"} // Cambio de Divisas
+            {"Seguro de vida", "Fondo de inversión"},
+            {"Retiro sin tarjeta", "Préstamo rápido"},
+            {"Cuenta en dólares", "Certificado de divisas"}
     };
 
-    /**
-     * Muestra por pantalla los productos complementarios
-     * para el trámite indicado.
-     */
+
     public void mostrarComplemento(String tipoTramite) {
         int index = -1;
         for (int i = 0; i < TRAMITES.length; i++) {
@@ -38,10 +35,7 @@ public class Grafo {
         }
     }
 
-    /**
-     * Devuelve un stub del tipo de cambio USD.
-     * Luego puedes reemplazarlo con una consulta real a tu BD o API.
-     */
+
     public String obtenerTipoCambioDolar() {
         return "Tipo de cambio actual: 600.00 CRC/USD";
     }

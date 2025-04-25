@@ -1,4 +1,3 @@
-// src/main/java/fidelitasvirtual.org/models/NodoCaja.java
 package fidelitasvirtual.org.models;
 
 public class NodoCaja {

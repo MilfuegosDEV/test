@@ -14,7 +14,6 @@ public class Configuracion {
     public static void verificarConfiguracion() {
         try {
             if (!bancoDAO.existeConfiguracion()) {
-                // Banco
                 String nombre;
                 do {
                     nombre = JOptionPane.showInputDialog("Ingrese el nombre del banco:");
@@ -34,7 +33,6 @@ public class Configuracion {
                 Banco b = new Banco(nombre, cajasB);
                 bancoDAO.insertar(b);
 
-                // Usuarios
                 int numU = 0;
                 while (numU <= 0) {
                     try {

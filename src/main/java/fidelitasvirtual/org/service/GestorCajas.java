@@ -1,17 +1,12 @@
-// src/main/java/service/GestorCajas.java
-package service;
+package fidelitasvirtual.org.service;
 
 import fidelitasvirtual.org.dao.TiqueteDAO;
 import fidelitasvirtual.org.dao.TiqueteDAOImpl;
 import fidelitasvirtual.org.dao.ReporteDAO;
 import fidelitasvirtual.org.dao.ReporteDAOImpl;
 import fidelitasvirtual.org.models.*;
-import fidelitasvirtual.org.util.DBUtil;
 
 import javax.swing.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -27,7 +22,6 @@ public class GestorCajas {
         for (int i = 0; i < cantB; i++) {
             cajasB.agregarCaja(new Caja('B'));
         }
-        // cargar pendientes
         Usando.TiquetesTemporales tmp = tiqueteDAO.listarPendientes();
         Usando.NodoTiqueteCarga nodo = tmp.getCabeza();
         while (nodo != null) {
@@ -43,7 +37,6 @@ public class GestorCajas {
 
     public void crearTiquete() {
         try {
-            // --- 1) Lectura de datos ---
             String nombre = JOptionPane.showInputDialog("Nombre del cliente:");
             int edad = Integer.parseInt(
                     JOptionPane.showInputDialog("Edad del cliente:")
@@ -65,11 +58,9 @@ public class GestorCajas {
             );
             String tramite = opts2[sel2];
 
-            // --- 2) Construcción del Tiquete en memoria ---
             Cliente c = new Cliente(nombre, edad, tipoC, tramite);
             Tiquete t = new Tiquete(c);
 
-            // --- 3) Calcular índice para cajas tipo B ---
             int idxB = 0;
             if (tipoC == 'B') {
                 Caja menos = cajasB.obtenerCaja(0);
@@ -83,17 +74,14 @@ public class GestorCajas {
                 idxB = mejor;
             }
 
-            // --- 4) Inserta y marca pendiente en un solo paso DAO ---
             t = tiqueteDAO.insertar(t, tipoC, idxB);
 
-            // --- 5) Encolar en memoria ---
             switch (tipoC) {
                 case 'P' -> cajaP.encolar(t);
                 case 'A' -> cajaA.encolar(t);
                 case 'B' -> cajasB.obtenerCaja(idxB).encolar(t);
             }
 
-            // --- 6) Feedback al usuario ---
             JOptionPane.showMessageDialog(
                     null,
                     "Tiquete creado:\n" + t
@@ -111,7 +99,6 @@ public class GestorCajas {
 
     public void atenderTiquete() {
         try {
-            // Mostrar estado
             StringBuilder m = new StringBuilder("Seleccione caja:\n");
             m.append("1. P (").append(cajaP.getCantidad()).append(")\n");
             m.append("2. A (").append(cajaA.getCantidad()).append(")\n");
@@ -136,13 +123,10 @@ public class GestorCajas {
                 JOptionPane.showMessageDialog(null, "Sin tiquetes");
                 return;
             }
-            // sugerir complementos
             grafo.mostrarComplemento(t.getCliente().getTipoTramite());
             if ("Cambio de divisas".equals(t.getCliente().getTipoTramite())) {
-                // suponiendo método existe
                 JOptionPane.showMessageDialog(null, grafo.obtenerTipoCambioDolar());
             }
-            // registrar atención
             long seg = Duration.between(t.getHoraCreacion(), LocalDateTime.now()).getSeconds();
             t.setHoraAtencion(LocalDateTime.now());
             tiqueteDAO.actualizarAtendido(t.getId());

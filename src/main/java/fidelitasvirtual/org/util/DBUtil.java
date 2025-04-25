@@ -11,7 +11,7 @@ public class DBUtil {
                     + "&serverTimezone=UTC"
                     + "&allowPublicKeyRetrieval=true";
     private static final String USER     = "root";       // ajusta usuario
-    private static final String PASSWORD = "admin"; // ajusta contraseña
+    private static final String PASSWORD = "_=lDX;430y7~"; // ajusta contraseña
 
     private DBUtil() { }
 

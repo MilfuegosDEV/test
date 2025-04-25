@@ -25,7 +25,6 @@ public class ReporteDAOImpl implements ReporteDAO {
 
         try (Connection conn = DBUtil.getConnection()) {
 
-            // 1. Caja con más clientes
             String sql1 = "SELECT tipo_caja, num_caja, COUNT(*) AS total FROM Reporte " +
                     "GROUP BY tipo_caja, num_caja ORDER BY total DESC LIMIT 1";
             try (PreparedStatement ps = conn.prepareStatement(sql1);
@@ -38,7 +37,6 @@ public class ReporteDAOImpl implements ReporteDAO {
                 }
             }
 
-            // 2. Total de clientes atendidos
             String sql2 = "SELECT COUNT(*) AS total_clientes FROM Reporte";
             try (PreparedStatement ps = conn.prepareStatement(sql2);
                  ResultSet rs = ps.executeQuery()) {
@@ -48,7 +46,6 @@ public class ReporteDAOImpl implements ReporteDAO {
                 }
             }
 
-            // 3. Caja con mejor tiempo promedio
             String sql3 = "SELECT tipo_caja, num_caja, AVG(segundos_espera) AS promedio FROM Reporte " +
                     "GROUP BY tipo_caja, num_caja ORDER BY promedio ASC LIMIT 1";
             try (PreparedStatement ps = conn.prepareStatement(sql3);
@@ -61,7 +58,6 @@ public class ReporteDAOImpl implements ReporteDAO {
                 }
             }
 
-            // 4. Tiempo promedio general
             String sql4 = "SELECT AVG(segundos_espera) AS promedio_general FROM Reporte";
             try (PreparedStatement ps = conn.prepareStatement(sql4);
                  ResultSet rs = ps.executeQuery()) {

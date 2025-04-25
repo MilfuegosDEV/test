@@ -1,20 +1,17 @@
-// src/main/java/Main.java
+package fidelitasvirtual.org;// src/main/java/Main.java
 import fidelitasvirtual.org.models.Banco;
 import fidelitasvirtual.org.models.Configuracion;
-import service.GestorCajas;
+import fidelitasvirtual.org.service.GestorCajas;
 
 import javax.swing.JOptionPane;
 
 public class Main {
     public static void main(String[] args) {
-        // 1. Configuración inicial
         Configuracion.verificarConfiguracion();
-        // 2. Autenticación
         if (!Configuracion.autenticar()) {
             JOptionPane.showMessageDialog(null, "Credenciales incorrectas", "Error", JOptionPane.ERROR_MESSAGE);
             System.exit(0);
         }
-        // 3. Cargar banco y gestor
         Banco banco = Configuracion.leerBanco();
         try {
             GestorCajas gestor = new GestorCajas(banco.getCantidadCajas());
