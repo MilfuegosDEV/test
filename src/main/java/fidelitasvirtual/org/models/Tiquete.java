@@ -5,14 +5,12 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 public class Tiquete {
-    private static int contadorId = 1;
     private int id;
     private final Cliente cliente;
     private LocalDateTime horaCreacion;
     private LocalDateTime horaAtencion;
 
     public Tiquete(Cliente cliente) {
-        this.id = contadorId++;
         this.cliente = cliente;
         this.horaCreacion = LocalDateTime.now();
     }
@@ -20,9 +18,6 @@ public class Tiquete {
     /** Se usa al recargar desde BD */
     public void setId(int id) {
         this.id = id;
-        if (id >= contadorId) {
-            contadorId = id + 1;
-        }
     }
 
     public void setHoraCreacion(LocalDateTime horaCreacion) {

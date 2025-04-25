@@ -24,7 +24,7 @@ CREATE TABLE Cliente (
 );
 
 CREATE TABLE Tiquete (
-                         id INT PRIMARY KEY,
+                         id INT AUTO_INCREMENT PRIMARY KEY,
                          cliente_id INT NOT NULL,
                          hora_creacion DATETIME,
                          hora_atencion DATETIME,

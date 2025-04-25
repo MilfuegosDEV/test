@@ -12,32 +12,55 @@ public class TiqueteDAOImpl implements TiqueteDAO {
     private final ClienteDAO clienteDAO = new ClienteDAOImpl();
 
     @Override
-    public void insertar(Tiquete t) throws Exception {
-        // Asegura que el cliente esté en BD
+    public Tiquete insertar(Tiquete t, char tipoCaja, int indexCaja) throws Exception {
+        // 1) Asegura cliente
         if (t.getCliente().getId() == 0) {
             clienteDAO.insertar(t.getCliente());
         }
-        String sql = "INSERT INTO Tiquete (id, cliente_id, hora_creacion) VALUES (?, ?, ?)";
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, t.getId());
-            ps.setInt(2, t.getCliente().getId());
-            ps.setTimestamp(3, Timestamp.valueOf(t.getHoraCreacion()));
-            ps.executeUpdate();
+
+        String sqlInsert =
+                "INSERT INTO Tiquete (cliente_id, hora_creacion) VALUES (?, ?)";
+        String sqlPend   =
+                "INSERT INTO TiquetePendiente (tiquete_id, tipo_caja, index_caja) VALUES (?, ?, ?)";
+
+        try (Connection conn = DBUtil.getConnection()) {
+            conn.setAutoCommit(false);
+            try (
+                    PreparedStatement psIns = conn.prepareStatement(
+                            sqlInsert, Statement.RETURN_GENERATED_KEYS);
+                    PreparedStatement psPen = conn.prepareStatement(sqlPend)
+            ) {
+                // a) Inserto en Tiquete
+                psIns.setInt(1, t.getCliente().getId());
+                psIns.setTimestamp(2, Timestamp.valueOf(t.getHoraCreacion()));
+                psIns.executeUpdate();
+
+                // b) Recupero y asigno ID
+                try (ResultSet rs = psIns.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        t.setId(rs.getInt(1));
+                    } else {
+                        throw new SQLException("No se obtuvo ID al insertar Tiquete");
+                    }
+                }
+
+                // c) Marco pendiente
+                psPen.setInt(1, t.getId());
+                psPen.setString(2, String.valueOf(tipoCaja));
+                psPen.setInt(3, indexCaja);
+                psPen.executeUpdate();
+
+                conn.commit();
+                return t;
+            } catch (Exception ex) {
+                conn.rollback();
+                throw ex;
+            } finally {
+                conn.setAutoCommit(true);
+            }
         }
     }
 
-    @Override
-    public void marcarPendiente(int id, char tipoCaja, int indexCaja) throws Exception {
-        String sql = "INSERT INTO TiquetePendiente (tiquete_id, tipo_caja, index_caja) VALUES (?, ?, ?)";
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            ps.setString(2, String.valueOf(tipoCaja));
-            ps.setInt(3, indexCaja);
-            ps.executeUpdate();
-        }
-    }
 
     @Override
     public Usando.TiquetesTemporales listarPendientes() throws Exception {

@@ -43,53 +43,71 @@ public class GestorCajas {
 
     public void crearTiquete() {
         try {
+            // --- 1) Lectura de datos ---
             String nombre = JOptionPane.showInputDialog("Nombre del cliente:");
-            int edad = Integer.parseInt(JOptionPane.showInputDialog("Edad del cliente:"));
-            String[] opts1 = {"Preferencial (P)", "Un trámite (A)", "Varios trámites (B)"};
-            int sel1 = JOptionPane.showOptionDialog(null, "Tipo de cliente:", "",
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opts1, opts1[0]);
+            int edad = Integer.parseInt(
+                    JOptionPane.showInputDialog("Edad del cliente:")
+            );
+
+            String[] opts1 = { "Preferencial (P)", "Un trámite (A)", "Varios trámites (B)" };
+            int sel1 = JOptionPane.showOptionDialog(
+                    null, "Tipo de cliente:", "",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+                    null, opts1, opts1[0]
+            );
             char tipoC = "PAB".charAt(sel1);
-            String[] opts2 = {"Depósitos", "Retiros", "Cambio de divisas"};
-            int sel2 = JOptionPane.showOptionDialog(null, "Tipo de trámite:", "",
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opts2, opts2[0]);
+
+            String[] opts2 = { "Depósitos", "Retiros", "Cambio de divisas" };
+            int sel2 = JOptionPane.showOptionDialog(
+                    null, "Tipo de trámite:", "",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+                    null, opts2, opts2[0]
+            );
             String tramite = opts2[sel2];
 
+            // --- 2) Construcción del Tiquete en memoria ---
             Cliente c = new Cliente(nombre, edad, tipoC, tramite);
             Tiquete t = new Tiquete(c);
 
-            tiqueteDAO.insertar(t);
+            // --- 3) Calcular índice para cajas tipo B ---
             int idxB = 0;
-            switch (tipoC) {
-                case 'P':
-                    cajaP.encolar(t);
-                    tiqueteDAO.marcarPendiente(t.getId(), 'P', 0);
-                    break;
-                case 'A':
-                    cajaA.encolar(t);
-                    tiqueteDAO.marcarPendiente(t.getId(), 'A', 0);
-                    break;
-                case 'B':
-                    // buscar B menos ocupada
-                    Caja menos = cajasB.obtenerCaja(0);
-                    int idx = 0, mejor = 0;
-                    NodoCaja actual = cajasB.getCabeza();
-                    while (actual != null) {
-                        if (actual.getCaja().getCantidad() < menos.getCantidad()) {
-                            menos = actual.getCaja();
-                            mejor = idx;
-                        }
-                        actual = actual.getSiguiente(); idx++;
+            if (tipoC == 'B') {
+                Caja menos = cajasB.obtenerCaja(0);
+                int mejor = 0, idx = 0;
+                for (NodoCaja nc = cajasB.getCabeza(); nc != null; nc = nc.getSiguiente(), idx++) {
+                    if (nc.getCaja().getCantidad() < menos.getCantidad()) {
+                        menos = nc.getCaja();
+                        mejor = idx;
                     }
-                    menos.encolar(t);
-                    tiqueteDAO.marcarPendiente(t.getId(), 'B', mejor);
-                    idxB = mejor;
-                    break;
+                }
+                idxB = mejor;
             }
-            JOptionPane.showMessageDialog(null, "Tiquete creado:\n" + t);
+
+            // --- 4) Inserta y marca pendiente en un solo paso DAO ---
+            t = tiqueteDAO.insertar(t, tipoC, idxB);
+
+            // --- 5) Encolar en memoria ---
+            switch (tipoC) {
+                case 'P' -> cajaP.encolar(t);
+                case 'A' -> cajaA.encolar(t);
+                case 'B' -> cajasB.obtenerCaja(idxB).encolar(t);
+            }
+
+            // --- 6) Feedback al usuario ---
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Tiquete creado:\n" + t
+            );
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error crear tiquete: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Error crear tiquete: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }
+
 
     public void atenderTiquete() {
         try {
